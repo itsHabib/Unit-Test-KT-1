@@ -52,7 +52,7 @@ func main() {
 	}
 	fmt.Println("found", len(breeds)+1, "breeds")
 
-	// download image
+	// download image from API
 	getImage, err := http.NewRequest("GET", breeds[0].Url, nil)
 	if err != nil {
 		log.Fatalf("unable to create cat image request: %v", err)
@@ -86,6 +86,7 @@ func main() {
 	}
 	fmt.Println("uploaded image to s3")
 
+	// download image to file
 	f, err := os.Create(key)
 	if err != nil {
 		log.Fatalf("unable to create file: %v", err)
