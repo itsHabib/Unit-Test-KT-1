@@ -39,7 +39,9 @@ func main() {
 		log.Fatalf("unable to get cat metadata: %v", err)
 	}
 	defer breedsResp.Body.Close()
-
+	if breedsResp.StatusCode != http.StatusOK {
+		log.Fatalf("received non 200 status code: %d", breedsResp.StatusCode)
+	}
 	var breeds []Metadata
 	if err := json.NewDecoder(breedsResp.Body).Decode(&breeds); err != nil {
 		log.Fatalf("unable to unmarshal cat metadata: %v", err)
@@ -48,6 +50,7 @@ func main() {
 	if len(breeds) == 0 {
 		log.Fatal("no cat metadata found")
 	}
+	fmt.Println("found", len(breeds)+1, "breeds")
 
 	// download image
 	getImage, err := http.NewRequest("GET", breeds[0].Url, nil)
@@ -61,6 +64,10 @@ func main() {
 		log.Fatalf("unable to get cat image: %v", err)
 	}
 	defer imageResp.Body.Close()
+	if imageResp.StatusCode != http.StatusOK {
+		log.Fatalf("received non 200 status code: %d", imageResp.StatusCode)
+	}
+	fmt.Println("retrieving image")
 
 	// upload image to s3
 	sess, err := session.NewSession(aws.NewConfig().WithRegion("us-east-1"))
@@ -71,21 +78,25 @@ func main() {
 	key := "cat-" + strconv.Itoa(time.Now().Minute()) + ".jpg"
 	uploader := s3manager.NewUploader(sess)
 	if _, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("go-kt-1"),
+		Bucket: aws.String("go-kt"),
 		Key:    &key,
 		Body:   imageResp.Body,
 	}); err != nil {
 		log.Fatalf("unable to upload cat image: %v", err)
 	}
+	fmt.Println("uploaded image to s3")
 
-	buf := aws.NewWriteAtBuffer([]byte{})
+	f, err := os.Create(key)
+	if err != nil {
+		log.Fatalf("unable to create file: %v", err)
+	}
 	downloader := s3manager.NewDownloader(sess)
-	if _, err := downloader.Download(buf, &s3.GetObjectInput{
-		Bucket: aws.String("go-kt-1"),
+	if _, err := downloader.Download(f, &s3.GetObjectInput{
+		Bucket: aws.String("go-kt"),
 		Key:    &key,
 	}); err != nil {
 		log.Fatalf("unable to download cat image: %v", err)
 	}
 
-	fmt.Println("downloaded", len(buf.Bytes()), "bytes")
+	fmt.Println("downloaded from S3")
 }
