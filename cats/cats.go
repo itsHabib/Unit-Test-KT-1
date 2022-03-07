@@ -11,11 +11,10 @@ import (
 )
 
 const (
-	apiURL = "https://api.thecatapi.com/v1/images/search?breed_ids"
-	apiKeyHeader = "x-api-key"
+	apiURL          = "https://api.thecatapi.com/v1/images/search?breed_ids"
+	apiKeyHeader    = "x-api-key"
 	breedIdQueryKey = "breed_ids"
-	MainCoonID = "mcoo"
-
+	MainCoonID      = "mcoo"
 )
 
 type Cat interface {

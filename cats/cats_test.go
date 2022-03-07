@@ -21,14 +21,14 @@ func TestClient_GetBreeds(t *testing.T) {
 	for _, tc := range []struct {
 		desc    string
 		wantErr bool
-		errStr string
+		errStr  string
 		breedId string
-		doer func(t *testing.T, ctrl *gomock.Controller) HttpDo
+		doer    func(t *testing.T, ctrl *gomock.Controller) HttpDo
 	}{
 		{
-			desc: "should return and error if breed id is empty",
+			desc:    "should return and error if breed id is empty",
 			wantErr: true,
-			errStr: EmptyBreedID.Error(),
+			errStr:  EmptyBreedID.Error(),
 		},
 		{
 			desc:    "get breeds requests failure should result in an error",
@@ -64,9 +64,9 @@ func TestClient_GetBreeds(t *testing.T) {
 
 						body := defaultBody()
 						resp := http.Response{
-							StatusCode:       400,
-							Body:           io.NopCloser(bytes.NewReader(body)),
-							ContentLength:    int64(len(body)),
+							StatusCode:    400,
+							Body:          io.NopCloser(bytes.NewReader(body)),
+							ContentLength: int64(len(body)),
 						}
 
 						return &resp, nil
@@ -76,7 +76,7 @@ func TestClient_GetBreeds(t *testing.T) {
 			},
 		},
 		{
-			desc: "happy path",
+			desc:    "happy path",
 			breedId: "mcoo",
 			doer: func(t *testing.T, ctrl *gomock.Controller) HttpDo {
 				m := mock_cats.NewMockHttpDo(ctrl)
@@ -94,9 +94,9 @@ func TestClient_GetBreeds(t *testing.T) {
 
 						body := defaultBody()
 						resp := http.Response{
-							StatusCode:       200,
-							Body:           io.NopCloser(bytes.NewReader(body)),
-							ContentLength:    int64(len(body)),
+							StatusCode:    200,
+							Body:          io.NopCloser(bytes.NewReader(body)),
+							ContentLength: int64(len(body)),
 						}
 
 						return &resp, nil
@@ -110,7 +110,7 @@ func TestClient_GetBreeds(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			if tc.doer == nil {
-				tc.doer = func(_ *testing.T, _ *gomock.Controller) HttpDo { return mock_cats.NewMockHttpDo(ctrl)}
+				tc.doer = func(_ *testing.T, _ *gomock.Controller) HttpDo { return mock_cats.NewMockHttpDo(ctrl) }
 			}
 
 			c, err := NewClient("key")

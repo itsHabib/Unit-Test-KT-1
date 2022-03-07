@@ -13,14 +13,12 @@ import (
 
 type Service struct {
 	catClient cats.Cat
-	str storage.Storage
+	str       storage.Storage
 }
 
 func (s *Service) Upload() error {
 	return nil
 }
-
-
 
 func main() {
 	apiKey := os.Getenv("CAT_API_KEY")
