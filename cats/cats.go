@@ -1,5 +1,8 @@
 package cats
 
+//go:generate go run github.com/golang/mock/mockgen -destination mocks/cats.go github.com/itsHabib/go-kt-1/cats HttpDo
+//go:generate go run github.com/golang/mock/mockgen -destination mocks/cats.go github.com/itsHabib/go-kt-1/cats Cat
+
 import (
 	"encoding/json"
 	"fmt"
@@ -9,7 +12,16 @@ import (
 
 const (
 	apiURL = "https://api.thecatapi.com/v1/images/search?breed_ids"
+	apiKeyHeader = "x-api-key"
+	breedIdQueryKey = "breed_ids"
+	MainCoonID = "mcoo"
+
 )
+
+type Cat interface {
+	GetBreeds(breedId string) ([]Metadata, error)
+	GetCatImage() error
+}
 
 type Client struct {
 	c      HttpDo
@@ -28,12 +40,17 @@ func NewClient(apiKey string) (*Client, error) {
 }
 
 func (c *Client) GetBreeds(breedId string) ([]Metadata, error) {
+	// validations of params
+	if breedId == "" {
+		return nil, EmptyBreedID
+	}
+
 	// get cat image
 	getBreeds, err := http.NewRequest(http.MethodGet, apiURL+"="+breedId, nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create cat image request: %w", err)
 	}
-	getBreeds.Header.Set("x-api-key", c.apiKey)
+	getBreeds.Header.Set(apiKeyHeader, c.apiKey)
 
 	// grab cat metadata
 	breedsResp, err := c.c.Do(getBreeds)

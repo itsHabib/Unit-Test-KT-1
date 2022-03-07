@@ -7,9 +7,20 @@ import (
 	"strconv"
 	"time"
 
-	"go-kt-1/cats"
-	"go-kt-1/storage"
+	"github.com/itsHabib/go-kt-1/cats"
+	"github.com/itsHabib/go-kt-1/storage"
 )
+
+type Service struct {
+	catClient cats.Cat
+	str storage.Storage
+}
+
+func (s *Service) Upload() error {
+	return nil
+}
+
+
 
 func main() {
 	apiKey := os.Getenv("CAT_API_KEY")
@@ -27,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	breeds, err := catClient.GetBreeds("mcoo")
+	breeds, err := catClient.GetBreeds(cats.MainCoonID)
 	if err != nil {
 		log.Fatal(err)
 	}

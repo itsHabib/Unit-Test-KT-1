@@ -1,5 +1,7 @@
 package storage
 
+//go:generate ...
+
 import (
 	"bytes"
 	"fmt"
@@ -15,6 +17,11 @@ import (
 type Service struct {
 	s3         *s3.S3
 	downloader *s3manager.Downloader
+}
+
+type Storage interface {
+	Upload()
+	Download()
 }
 
 func NewService(bucket string) (*Service, error) {
